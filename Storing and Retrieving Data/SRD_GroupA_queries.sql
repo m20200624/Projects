@@ -1,0 +1,51 @@
+/* ----------------------------------------       QUERIES      --------------------------------------------------------------------*/
+USE AITI_JEWELS ;
+
+/* 1 - List all the customer’s names, dates, and products or services bought by these customers in a range of two dates */
+
+SELECT C.`NAME` AS `CLIENT NAME`, OD.ORDER_DATE, P.`NAME` AS `PRODUCT NAME`
+FROM CUSTOMER C
+JOIN ORDER_DETAIL OD ON OD.CUSTOMER_ID = C.CUSTOMER_ID
+JOIN ORDER_ITEM OI ON OD.ORDER_ID = OI.ORDER_ID
+JOIN PRODUCT P ON P.PRODUCT_ID = OI.PRODUCT_ID
+WHERE (OD.ORDER_DATE BETWEEN '2018-03-12' AND '2019-10-03') AND OD.ORDER_STATUS LIKE 'Paid' AND C.NEW_CLIENT_SPENDING_CATEGORY LIKE 'Not a new client' ;
+
+/* 2 - List the best three customers */
+/* We are considering the best clients the ones that spent more money in our store */
+
+SELECT C.`NAME`, CONCAT(C.MONEY_SPENT, ' €') AS MONEY_SPENT
+FROM CUSTOMER C
+WHERE C.NEW_CLIENT_SPENDING_CATEGORY LIKE 'Not a new client'
+ORDER BY C.MONEY_SPENT DESC
+LIMIT 3;
+
+/* 3 - Get the average amount of sales (in euros) by month and by year for the whole sales history. */
+
+SELECT CONCAT(CONCAT(MONTH(MIN(OD.ORDER_DATE)), '/', YEAR(MIN(OD.ORDER_DATE))), ' - ', CONCAT(MONTH(MAX(OD.ORDER_DATE)),'/', YEAR(MAX(OD.ORDER_DATE)))) AS PeriodOfSales,
+		CONCAT(TOTAL.MONEY, ' €') AS `TotalSales (euros)`, 
+        CONCAT(ROUND(TOTAL.MONEY/FLOOR(DATEDIFF(MAX(OD.ORDER_DATE), MIN(OD.ORDER_DATE))/365), 2), ' €') AS YearlyAverage, 
+		CONCAT(ROUND(TOTAL.MONEY/FLOOR(DATEDIFF(MAX(OD.ORDER_DATE), MIN(OD.ORDER_DATE))/30), 2), ' €') AS MonthlyAverage
+FROM ORDER_DETAIL OD, (SELECT SUM(MONEY_SPENT) AS MONEY FROM CUSTOMER) AS TOTAL, CUSTOMER C
+WHERE C.NEW_CLIENT_SPENDING_CATEGORY LIKE 'Not a new client';
+
+/* 4 - Get the total sales by geographical location (city/country). */
+
+SELECT L.COUNTRY, L.CITY, CONCAT(ROUND(SUM(OD.TOTAL_PRICE*(1-OD.DISCOUNT)+ST.COST), 2), ' €') AS TotalSales
+FROM ORDER_DETAIL OD
+JOIN LOCATION L ON L.LOCATION_ID = OD.LOCATION_ID
+JOIN SHIPPING_TYPE ST ON ST.SHIPPING_ID = OD.SHIPPING_ID 
+JOIN CUSTOMER C ON C.CUSTOMER_ID = OD.CUSTOMER_ID
+WHERE OD.ORDER_STATUS LIKE 'Paid' AND C.NEW_CLIENT_SPENDING_CATEGORY LIKE 'Not a new client'
+GROUP BY L.COUNTRY, L.CITY;
+
+/* 5. List all the locations where products/services were sold and the product has customer’s ratings. */
+
+SELECT L.COUNTRY, L.CITY
+FROM ORDER_DETAIL OD
+JOIN ORDER_ITEM OI ON OD.ORDER_ID = OI.ORDER_ID
+JOIN PRODUCT P ON P.PRODUCT_ID = OI.PRODUCT_ID
+JOIN PRODUCT_RATING PR ON PR.PRODUCT_ID = P.PRODUCT_ID
+JOIN CUSTOMER C ON OD.CUSTOMER_ID = C.CUSTOMER_ID
+JOIN LOCATION L ON L.LOCATION_ID = OD.LOCATION_ID 
+WHERE OD.ORDER_STATUS LIKE 'Paid' AND C.NEW_CLIENT_SPENDING_CATEGORY LIKE 'Not a new client' 
+GROUP BY L.COUNTRY, L.CITY;
