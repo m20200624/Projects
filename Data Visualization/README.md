@@ -1,4 +1,4 @@
-# Infografic: Covid's Impact on our Digital World
+# Infographic - Covid's Impact on our Digital World
 
 - The kickoff idea for our research about the impacts
 of the covid pandemic is:
