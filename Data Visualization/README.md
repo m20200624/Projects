@@ -12,6 +12,7 @@ they resorted to cope with the lockdown.
 
 # We also developed a dashboard! 
 Check my colleague's GitHub repo abut the dash: https://lnkd.in/d6H9_Sm
+
 Check and explore the app at: https://foodtprint.herokuapp.com/
 
 We made this app using Plotly and Dash where you can compare the footprint of different food products.
