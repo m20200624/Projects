@@ -11,7 +11,8 @@ people went for information about covid, and what
 they resorted to cope with the lockdown.
 
 # We also developed a dashboard! 
-Check the app at my colleague's GitHub repo: https://lnkd.in/d6H9_Sm
+Check my colleague's GitHub repo abut the dash: https://lnkd.in/d6H9_Sm
+Check and explore the app at: https://foodtprint.herokuapp.com/
 
 We made this app using Plotly and Dash where you can compare the footprint of different food products.
 There you can explore the products whose productions emit more greenhouse gases and associate this with each supply chain step, their worldwide productions, and the water use.
